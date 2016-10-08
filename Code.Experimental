@@ -1,0 +1,103 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Diagnostics;
+
+namespace MultiThreadTest
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            threads worker = new threads();
+
+            Console.WriteLine("Initialisation du programme");
+
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("Quel est le mot de passe a deviner?");
+            worker.password = Console.ReadLine();
+            Console.Clear();
+            Console.WriteLine("Nombre de lettres minimum?");
+            worker.debut = int.Parse(Console.ReadLine());
+            Console.Clear();
+            Console.WriteLine("Nombre de lettres maximum?");
+            worker.fin = int.Parse(Console.ReadLine());
+            worker.fin = worker.fin + 1;
+            Console.Clear();
+            
+            Thread worker1 = new Thread(new ThreadStart(threads.Worker1));
+            Thread worker2 = new Thread(new ThreadStart(threads.Worker2));
+            worker1.Start();
+            worker2.Start();
+
+            worker1.Join();
+            worker2.Join();
+
+            Console.ReadKey();
+            worker1.Abort();
+            worker2.Abort();
+            
+        }
+
+        class threads
+        {
+
+            // _random pour afficher que c'est une variable globale
+            public Random _random = new Random();
+            public long count = 0;
+            public int num;
+            public char rand;
+            public string crack = "";
+            public int lenght;
+            public int i = 0;
+            public string password;
+            public int debut;
+            public int fin;
+            
+            public static void Worker1()
+            {
+                //Generation random d'un pseudo mot de passe
+                do
+                {
+                    crack = "";
+                    lenght = 0;
+                    i = 0;
+                    lenght = _random.Next(debut, fin);
+                    while (i != lenght)
+                    {
+                        num = _random.Next(0, 26);
+                        rand = (char)('a' + num);
+                        crack = crack.Insert(0, rand.ToString());
+                        i++;
+                    }
+                    count++;
+                }//Test de condition (crack et password)
+                while (crack != password);
+            }
+
+            public static void Worker2()
+            {
+                //Generation random d'un pseudo mot de passe
+                do
+                {
+                    crack = "";
+                    lenght = 0;
+                    i = 0;
+                    lenght = _random.Next(debut, fin);
+                    while (i != lenght)
+                    {
+                        num = _random.Next(0, 26);
+                        rand = (char)('a' + num);
+                        crack = crack.Insert(0, rand.ToString());
+                        i++;
+                    }
+                    count++;
+                }//Test de condition (crack et password)
+                while (crack != password);
+            }
+        }
+    }
+}
