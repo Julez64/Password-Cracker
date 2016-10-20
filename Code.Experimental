@@ -1,0 +1,185 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Diagnostics;
+
+   /// <summary>
+   /// Crackeur de mots de passe Multi-Threadé
+   /// Julien Ferluc
+   /// 2016-10-08
+   /// </summary>
+
+namespace MultiThreadTest
+{
+    class Program
+    {
+        static void Main()
+        {
+            //Reconaissance de la nouvelle classe
+            threads worker = new threads();
+
+            Console.WriteLine("Initialisation du programme");
+
+            //Setup des variables
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("Quel est le mot de passe a deviner?");
+            worker.password = Console.ReadLine();
+            Console.Clear();
+            Console.WriteLine("Nombre de lettres minimum?");
+            worker.debut = int.Parse(Console.ReadLine());
+            Console.Clear();
+            Console.WriteLine("Nombre de lettres maximum?");
+            worker.fin = int.Parse(Console.ReadLine());
+            worker.fin = worker.fin + 1;
+            Console.Clear();
+
+            //Demarage du chronometre
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            //Initialisation des threads
+            Thread worker1 = new Thread(new ThreadStart(threads.Worker1));
+            Thread worker2 = new Thread(new ThreadStart(threads.Worker2));
+            Thread worker3 = new Thread(new ThreadStart(threads.Worker3));
+            Thread worker4 = new Thread(new ThreadStart(threads.Worker4));
+            worker1.Start();
+            worker2.Start();
+            worker3.Start();
+            worker4.Start();
+
+            worker1.Join();
+            worker2.Join();
+            worker3.Join();
+            worker4.Join();
+
+            //PID
+            int nProcessID = Process.GetCurrentProcess().Id;
+            Console.WriteLine("pid: " + nProcessID);
+
+            worker1.Abort();
+            worker2.Abort();
+            worker3.Abort();
+            worker4.Abort();
+
+            //Arret du timer et conversion du temps en millisecondes
+            stopwatch.Stop();
+            var elapsed = stopwatch.ElapsedMilliseconds;
+
+            //Stats et affichage du mot de passe
+            Console.Beep();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("password: " + worker.crack);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(worker.count + " tries in " + elapsed + "ms at " + worker.count / elapsed + " tries/ms");
+            Console.Read();
+        }
+
+        //Classe threads a part
+        class threads
+        {
+
+            // _random pour afficher que c'est une variable globale
+            public Random _random = new Random();
+            public long count = 0;
+            public int num;
+            public char rand;
+            public string crack = "";
+            public int lenght;
+            public int i = 0;
+            public string password;
+            public int debut;
+            public int fin;
+            
+            public static void Worker1()
+            {
+                Console.WriteLine("Thread 1 Online");
+
+               //Generation random d'un pseudo mot de passe et verification sur la thread 1
+                do
+                {
+                    crack = "";
+                    lenght = 0;
+                    i = 0;
+                    lenght = _random.Next(debut, fin);
+                    while (i != lenght)
+                    {
+                        num = _random.Next(0, 26);
+                        rand = (char)('a' + num);
+                        crack = crack.Insert(0, rand.ToString());
+                        i++;
+                    }
+                    count++;
+                } while (crack != password);
+            }
+
+            public static void Worker2()
+            {
+                Console.WriteLine("Thread 2 Online");
+
+                //Generation random d'un pseudo mot de passe et verification sur la thread 2
+                do
+                {
+                    crack = "";
+                    lenght = 0;
+                    i = 0;
+                    lenght = _random.Next(debut, fin);
+                    while (i != lenght)
+                    {
+                        num = _random.Next(0, 26);
+                        rand = (char)('a' + num);
+                        crack = crack.Insert(0, rand.ToString());
+                        i++;
+                    }
+                    count++;
+                } while (crack != password);
+            }
+
+            public static void Worker3()
+            {
+                Console.WriteLine("Thread 3 Online");
+
+                //Generation random d'un pseudo mot de passe et verification sur la thread 2
+                do
+                {
+                    crack = "";
+                    lenght = 0;
+                    i = 0;
+                    lenght = _random.Next(debut, fin);
+                    while (i != lenght)
+                    {
+                        num = _random.Next(0, 26);
+                        rand = (char)('a' + num);
+                        crack = crack.Insert(0, rand.ToString());
+                        i++;
+                    }
+                    count++;
+                } while (crack != password);
+            }
+
+            public static void Worker4()
+            {
+                Console.WriteLine("Thread 4 Online");
+
+                //Generation random d'un pseudo mot de passe et verification sur la thread 2
+                do
+                {
+                    crack = "";
+                    lenght = 0;
+                    i = 0;
+                    lenght = _random.Next(debut, fin);
+                    while (i != lenght)
+                    {
+                        num = _random.Next(0, 26);
+                        rand = (char)('a' + num);
+                        crack = crack.Insert(0, rand.ToString());
+                        i++;
+                    }
+                    count++;
+                } while (crack != password);
+            }
+        }
+    }
+}
